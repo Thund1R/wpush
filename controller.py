@@ -16,8 +16,7 @@ WX_API = WxApi()
 def get_bing():
     bing_url = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN"
     res = requests.get(bing_url).json()
-    bing_pic = "https://cn.bing.com/"+res["images"][0]["url"]
-    return bing_pic
+    return "https://cn.bing.com/"+res["images"][0]["url"]
 
 
 class MainController:
@@ -74,18 +73,17 @@ class MainController:
         return ret
 
     def index(self):
-        # TODO 主页渲染
         return {"body": render.show_index()}
 
     def send_msg(self):
         resp = {"body": {"code": 0}}
         msg_type = self.get_param('type')
 
-        # 有标题默认发卡片消息，没有标题发普通文本消息
+        # 有标题默认发卡片消息，没有标题发普通文本消息，有标题有图片发图文
         if msg_type is None and self.get_param('content'):
             msg_type = 'text'
             if self.get_param('title'):
-                msg_type = 'textcard'
+                msg_type = 'news' if self.get_param('pic') else 'textcard'
 
         if msg_type is None:
             raise BadRequestError('请提供消息内容(content) 或指定消息类型(type)')
